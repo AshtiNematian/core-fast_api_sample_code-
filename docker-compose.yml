@@ -1,0 +1,83 @@
+version: "3.3"
+services:
+  hypno_mongodb:
+    container_name: hypno_mongodb
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo_data/:/data/db
+    networks:
+      - hypno_network
+  hypno_crypto_api:
+    container_name: api
+    image: ${IMAGE_TAG}
+    command: uvicorn app.main:app --host 0.0.0.0 --reload
+    restart: always
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    networks:
+      - hypno_network
+  btc_scheduler_macd:
+    container_name: macd
+    image: ${IMAGE_TAG}
+    command: python app/scheduler/macd.py
+    restart: always
+    environment:
+      - MONGODB_CONNSTRING=mongodb://root:rootpassword@hypno_mongodb
+    networks:
+      - hypno_network
+  btc_scheduler_rsi:
+    container_name: rsi
+    image: ${IMAGE_TAG}
+    command: python app/scheduler/rsi.py
+    restart: always
+    environment:
+      - MONGODB_CONNSTRING=mongodb://root:rootpassword@hypno_mongodb
+    networks:
+      - hypno_network
+  btc_scheduler_rsi_smi:
+    container_name: rsi_smi
+    image: ${IMAGE_TAG}
+    command: python app/scheduler/rsi_smi.py
+    restart: always
+    environment:
+      - MONGODB_CONNSTRING=mongodb://root:rootpassword@hypno_mongodb
+    networks:
+      - hypno_network
+  btc_scheduler_stoch_rsi:
+    container_name: stoch_rsi
+    image: ${IMAGE_TAG}
+    command: python app/scheduler/stoch_rsi.py
+    restart: always
+    environment:
+      - MONGODB_CONNSTRING=mongodb://root:rootpassword@hypno_mongodb
+    networks:
+      - hypno_network
+  scheduler_price_history:
+    container_name: price_history
+    image: ${IMAGE_TAG}
+    command: python app/scheduler/price_history.py
+    restart: always
+    environment:
+      - MONGODB_CONNSTRING=mongodb://root:rootpassword@hypno_mongodb
+    networks:
+        - hypno_network
+  scheduler_latest_data:
+    container_name: latest_data
+    image: ${IMAGE_TAG}
+    command: python app/scheduler/latest_data.py
+    restart: always
+    environment:
+      - MONGODB_CONNSTRING=mongodb://root:rootpassword@hypno_mongodb
+    networks:
+      - hypno_network
+networks:
+  hypno_network:
+    external: true
