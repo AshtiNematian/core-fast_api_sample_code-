@@ -4,9 +4,4 @@ This project focuses on fetching cryptocurrency data from a designated API and a
 The data can be retrieved for various time intervals, such as 1 day or 4 hours, and for specific coins.
 The processed data is then passed to the back-end for additional processing or storage.
 
-#Getting Started
-To get started with this project, follow these steps:
-
-#Prerequisites
-Before running the project, make sure you have the following dependencies installed:
 
